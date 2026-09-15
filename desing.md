@@ -1,6 +1,6 @@
 # Finquo design specification
 
-Status: proposed design only. No screens or features have been implemented.
+Status: implemented as the current responsive interface. Final physical-device checks remain pending.
 
 ## Product direction
 

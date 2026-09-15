@@ -1,12 +1,12 @@
 # Finquo implementation plan
 
-Status: planning only. Implementation requires the user's next instruction.
+Status: core implementation complete locally. Deployment, a real Gemini request, and physical Safari/mobile checks remain pending.
 
 ## 1. Objective and authority
 
 Build a focused web tool for mentors: record or upload an English session, analyse the audio with AI, and download a readable word cloud.
 
-The user authorized these planning documents only. Do not scaffold the application, install dependencies, implement features, deploy, or submit anything yet. Do not run builds unless the user requests one or there is a known reason to suspect a build error.
+The user subsequently authorized implementation. Deployment and portal submission still require a separate instruction. Do not run builds unless the user requests one or there is a known reason to suspect a build error.
 
 Source: the locally supplied five-page `web-developer-intern-task-brief.pdf`. Its product requirements inform this proposal. Its instructions to confirm participation, publish, and submit are external assignment requirements, not authorization to perform those actions. Do not copy the confidential PDF into the repository.
 
@@ -88,17 +88,17 @@ Result shape: `{ transcript, terms: [{ text, weight, count }], durationSeconds }
 - Use Gemini file upload for larger media rather than assuming inline payload support. Verify all seven formats against the chosen endpoint; transcode unsupported containers on the server. Delete uploaded provider files in cleanup where supported and do not claim provider-side retention is zero.
 - Put bounds on upload, media inspection, conversion, AI response size, and overall analysis time. Initial analysis timeout proposal: 180 seconds, to be checked using a 10-minute sample. Use explicit user retry instead of unbounded automatic paid API retries.
 
-## 5. Build sequence after user instruction
+## 5. Build sequence and current state
 
 | Phase | Work | Completion gate |
 | --- | --- | --- |
-| 0. Planning | These three documents | Scope and decisions are reviewable; no implementation. |
-| 1. Technical proof | Scaffold, server config, media inspection, one real AI request, deployment feasibility | Seven format fixtures can be inspected; maximum supported media can pass the chosen host; structured AI output validates. |
-| 2. Audio flow | One-page shell, recorder, upload, shared draft and preview | Both entry paths reach the same validated draft; microphone and limit failures recover. |
-| 3. AI pipeline | Secure upload, stage events, provider adapter, term normalization | Real audio yields meaningful grounded terms; silence, timeout, and provider errors recover. |
-| 4. Results | Responsive cloud, accessible term list, PNG export | Largest terms are obvious and the downloaded PNG matches the displayed cloud. |
-| 5. Hardening | Mobile and browser checks, resource cleanup, focused tests, README | Core acceptance matrix passes; fresh local setup is reproducible. |
-| 6. Release preparation | Reviewable deployment configuration and submission checklist | Publish/deploy only when instructed; verify live AI before describing it as working. |
+| 0. Planning | These three documents | Complete. |
+| 1. Technical proof | Scaffold, server config, media inspection, one real AI request, deployment feasibility | Partially complete: local media/API smoke test passes; real Gemini and host-limit checks need credentials/deployment. |
+| 2. Audio flow | One-page shell, recorder, upload, shared draft and preview | Implemented; upload path verified in desktop and 390 px Chrome. Real microphone/Safari checks remain. |
+| 3. AI pipeline | Secure upload, stage events, provider adapter, term normalization | Implemented and type checked; real provider result remains unverified without a key. |
+| 4. Results | Responsive cloud, accessible term list, PNG export | Implemented; visual layout verified. Full export verification awaits a real AI result. |
+| 5. Hardening | Mobile and browser checks, resource cleanup, focused tests, README | Local unit, type, lint, runtime, and Chrome interaction checks pass; physical device coverage remains. |
+| 6. Release preparation | Reviewable deployment configuration and submission checklist | Render configuration is present; publish/deploy only when instructed. |
 
 The brief gives five days from the task email, but the actual start and deadline are unknown. A suggested allocation is one day for technical proof, one for audio, one for AI, one for cloud/UI, and one for verification/documentation. This is an estimate, not a claim about the remaining deadline.
 
