@@ -23,7 +23,7 @@ export async function prepareMedia(input: string, output: string, signal: AbortS
   const metadata = await probe(input, signal);
   const format = metadata.format?.format_name?.split(",") ?? [];
   const supported = new Set(["mp3", "wav", "mov", "mp4", "m4a", "3gp", "3g2", "mj2", "aac", "ogg", "matroska", "webm", "flac"]);
-  if (!format.some((name) => supported.has(name)) || !metadata.streams?.some((stream) => stream.codec_type === "audio") || metadata.streams.some((stream) => stream.codec_type === "video" && !["mp3", "mov", "flac"].some((name) => format.includes(name)))) {
+  if (!format.some((name) => supported.has(name)) || !metadata.streams?.some((stream) => stream.codec_type === "audio") || metadata.streams.some((stream) => stream.codec_type === "video")) {
     throw new AppError("INVALID_AUDIO", "This file doesn't contain supported audio. Choose another audio file.");
   }
   const reportedDuration = Number(metadata.format?.duration);

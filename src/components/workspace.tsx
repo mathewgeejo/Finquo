@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { Activity, ArrowRight, AudioLines, Check, CheckCircle2, CircleHelp, FileAudio, Headphones, Info, LoaderCircle, LockKeyhole, Mic, Plus, RotateCcw, ShieldCheck, Sparkles, Square, Upload, X } from "lucide-react";
 import { AUDIO_ACCEPT, formatBytes, formatDuration, validateFile } from "@/lib/audio/limits";
 import { checkLocalDuration, uploadAudio } from "@/lib/audio/client";
@@ -142,7 +143,7 @@ export function Workspace() {
   }
 
   return <div className={styles.app}>
-    <header className={styles.header}><a href="/" className={styles.brand} aria-label="Finquo home"><span className={styles.brandMark}><AudioLines size={22} strokeWidth={2.3} /></span>finquo<span className={styles.brandDot}>.</span></a><span className={styles.headerLabel}>A little clarity for every conversation</span><span className={styles.headerBadge}><span />SESSION WORKSPACE</span></header>
+    <header className={styles.header}><Link href="/" className={styles.brand} aria-label="Finquo home"><span className={styles.brandMark}><AudioLines size={22} strokeWidth={2.3} /></span>finquo<span className={styles.brandDot}>.</span></Link><span className={styles.headerLabel}>A little clarity for every conversation</span><span className={styles.headerBadge}><span />SESSION WORKSPACE</span></header>
     <main className={styles.main}>
       <section className={styles.intro} aria-labelledby="page-title"><div><p className={styles.eyebrow}><span /> LESS REPLAYING. MORE UNDERSTANDING.</p><h1 id="page-title">Find the focus in<br className={styles.mobileBreak} /> every conversation<span>.</span></h1><p className={styles.description}>Record or upload a session. Turn the words that matter into a clear, shareable word cloud.</p></div><div className={styles.introNote}><Sparkles size={18} /><span>A fresh perspective,<br /><strong>without the replay.</strong></span></div></section>
       <div className={styles.steps} aria-label="Workflow"><span className={phase === "idle" && !draft ? styles.activeStep : styles.doneStep}><b>{draft ? <Check size={13} /> : "1"}</b>Add your audio</span><i /><span className={phase === "analysing" ? styles.activeStep : result ? styles.doneStep : ""}><b>{result ? <Check size={13} /> : "2"}</b>Find the key topics</span><i /><span className={result ? styles.activeStep : ""}><b>3</b>Take the big picture</span></div>
