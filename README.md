@@ -39,6 +39,10 @@ npm run dev
 
 Open `http://localhost:3000`. Microphone recording requires localhost or HTTPS. Run `npm run test`, `npm run typecheck`, and `npm run lint` for the focused checks.
 
+### If Gemini analysis says the project has no quota
+
+The API key may be valid while its Google AI Studio project has no available request quota for the selected model. Open the project's [AI Studio rate-limit page](https://aistudio.google.com/usage), select a project/key with available Gemini quota, or enable billing for the project. Gemini quotas apply to the project, rather than to an individual key. After changing `.env.local`, restart a production server; Next.js development mode normally reloads it automatically.
+
 ## AI service
 
 The app uses the Gemini API because one multimodal request can produce both a transcript and structured topic candidates. The server validates those candidates against the transcript, so unsupported or invented topics never reach the cloud. The API key stays server-side.

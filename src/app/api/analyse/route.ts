@@ -58,7 +58,10 @@ export async function POST(request: Request) {
           audio.busy = false;
           audio.abort = undefined;
           done();
-          if (!closed) { closed = true; controller.close(); }
+          if (!closed) {
+            closed = true;
+            try { controller.close(); } catch { /* The client may have closed the stream concurrently. */ }
+          }
         }
       },
       cancel() { closed = true; abort.abort(); },
