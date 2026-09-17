@@ -9,6 +9,7 @@ Finquo is a focused, responsive tool for mentors. Record audio in the browser or
 - Server-side format and duration verification for files up to 25 MB or 10 minutes
 - Genuine Groq transcription and grounded prominent-term extraction
 - Responsive SVG word cloud, accessible ranked topic list, and matching PNG download
+- Optional advanced analysis with a brief summary, factual conversation context, discussion highlights, and a cleaned copyable transcript
 - Clear recovery for invalid files, missing speech, expired drafts, cancellation, timeouts, and provider failures
 
 Sessions are temporary and are lost when the server restarts. There are no accounts or saved analyses. Current Chrome and Safari on desktop and mobile are the targets; microphone behavior still needs confirmation on the physical devices used for final review.
@@ -42,7 +43,7 @@ Open `http://localhost:3000`. Microphone recording requires localhost or HTTPS. 
 
 ## AI service
 
-The app uses Groq in two server-side steps: `whisper-large-v3-turbo` transcribes the audio, then `openai/gpt-oss-20b` returns structured prominent-term candidates. The app validates candidates against the transcript, so unsupported or invented topics never reach the cloud. The API key stays server-side.
+The app uses Groq in two server-side steps: `whisper-large-v3-turbo` transcribes the audio, then `openai/gpt-oss-20b` returns structured prominent-term candidates. When Advanced analysis is enabled, the same request can also return a brief summary, factual session context, highlights, and a cleaned transcript. The app validates candidates against the source transcript, so unsupported or invented topics never reach the cloud. The API key stays server-side.
 
 Audio is converted to mono 16 kHz WAV before Groq receives it. Audio and transcripts are processed only for the active analysis request; provider retention and privacy remain subject to the Groq account terms.
 

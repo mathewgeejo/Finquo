@@ -9,7 +9,21 @@ export const aiResultSchema = z.object({
 });
 
 export type Term = { text: string; count: number; weight: number };
-export type AnalysisResult = { transcript: string; terms: Term[]; durationSeconds: number };
+export type AnalysisOptions = { summary: boolean; context: boolean; transcript: boolean; highlights: boolean };
+export const defaultAnalysisOptions: AnalysisOptions = { summary: true, context: true, transcript: true, highlights: true };
+export const analysisOptionsSchema = z.object({
+  summary: z.boolean(),
+  context: z.boolean(),
+  transcript: z.boolean(),
+  highlights: z.boolean(),
+}).strict();
+export type AdvancedAnalysis = {
+  summary?: string;
+  context?: string;
+  cleanedTranscript?: string;
+  highlights?: string[];
+};
+export type AnalysisResult = { transcript: string; terms: Term[]; durationSeconds: number; advanced?: AdvancedAnalysis };
 export type AudioDraft = { audioId: string; durationSeconds: number; sizeBytes: number; playbackAvailable: boolean };
 export type AnalysisEvent =
   | { type: "stage"; message: string }

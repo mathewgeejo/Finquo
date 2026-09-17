@@ -74,6 +74,24 @@
 .progressBox progress { width: 100%; height: 5px; margin-top: 10px; accent-color: var(--teal); }
 .textButton { display: block; margin: 9px auto 0; border: 0; background: transparent; color: #697b7e; font-size: 10px; text-decoration: underline; cursor: pointer; }
 .replaceButton, .startOver { margin-top: 13px; border: 0; background: none; color: #687a7c; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 10px; }
+.advancedControls { margin-top: 14px; border: 1px solid #dbe5e2; border-radius: 8px; overflow: hidden; background: #fbfcfb; }
+.advancedToggle { min-height: 57px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+.advancedToggle > span { display: flex; align-items: center; gap: 9px; color: var(--teal); }
+.advancedToggle strong, .advancedToggle small { display: block; }
+.advancedToggle strong { color: #31565a; font-size: 10px; }
+.advancedToggle small { margin-top: 3px; color: #8a989a; font-size: 8px; }
+.advancedToggle input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.advancedToggle i { width: 30px; height: 18px; border-radius: 12px; background: #cfd9d7; position: relative; transition: background .15s ease; }
+.advancedToggle i::after { content: ''; position: absolute; width: 12px; height: 12px; top: 3px; left: 3px; border-radius: 50%; background: white; box-shadow: 0 1px 3px rgba(0,0,0,.2); transition: transform .15s ease; }
+.advancedToggle input:checked + i { background: var(--teal); }
+.advancedToggle input:checked + i::after { transform: translateX(12px); }
+.advancedToggle:has(input:focus-visible) { outline: 3px solid #3187a0; outline-offset: -3px; }
+.advancedControls fieldset { margin: 0; padding: 10px 12px 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 7px; border: 0; border-top: 1px solid #e2eae7; }
+.advancedControls legend { padding: 0; margin-bottom: 8px; color: #7b898b; font-size: 8px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; }
+.advancedControls fieldset label { min-height: 29px; padding: 6px 5px; display: flex; align-items: center; gap: 6px; border-radius: 5px; color: #617477; font-size: 9px; cursor: pointer; }
+.advancedControls fieldset label:hover { background: #eef5f3; }
+.advancedControls fieldset input { accent-color: var(--teal); }
+.advancedControls fieldset span { display: flex; align-items: center; gap: 4px; }
 .error { margin: 14px 0 0; display: flex; align-items: flex-start; gap: 8px; padding: 10px; color: var(--error); background: #fdf1ef; border: 1px solid #f1cfca; border-radius: 7px; font-size: 10px; line-height: 1.45; }
 .error svg { flex: none; }
 .notice { color: var(--teal-dark); background: var(--teal-soft); border-radius: 7px; padding: 10px; font-size: 10px; line-height: 1.45; }
@@ -114,6 +132,17 @@
 .termDetails ol { margin: 0; padding: 0 0 5px; list-style: none; max-height: 160px; overflow: auto; }
 .termDetails li { padding: 7px 3px; display: flex; justify-content: space-between; border-top: 1px solid #edf0ef; }
 .termDetails li span:last-child { color: #97a1a2; }
+.advancedResults { margin-top: 22px; padding-top: 17px; border-top: 1px solid #e2e9e6; }
+.advancedResultsHeading { margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; color: var(--teal); }
+.advancedResultsHeading span { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; }
+.advancedResultsHeading small { color: #8d999b; font-size: 8px; }
+.insightCard, .transcriptCard { margin-top: 9px; padding: 13px; border: 1px solid #e0e8e5; border-radius: 8px; background: #fbfdfc; }
+.insightCard h3, .transcriptCard h3 { margin: 0; display: flex; align-items: center; gap: 6px; color: #3d6063; font-size: 10px; }
+.insightCard p, .transcriptCard p { margin: 8px 0 0; color: #637477; font-size: 10px; line-height: 1.6; }
+.insightCard ul { margin: 9px 0 0; padding-left: 17px; color: #637477; font-size: 10px; line-height: 1.65; }
+.transcriptCard { display: grid; grid-template-columns: 1fr auto; gap: 10px; }
+.copyButton { align-self: start; min-height: 29px; padding: 0 9px; display: inline-flex; align-items: center; gap: 5px; border: 1px solid #c9ddda; border-radius: 5px; background: white; color: var(--teal); font-size: 9px; font-weight: 700; cursor: pointer; }
+.transcriptCard pre { grid-column: 1 / -1; max-height: 260px; margin: 1px 0 0; padding: 10px; overflow: auto; white-space: pre-wrap; border-radius: 6px; background: #f1f5f3; color: #516367; font: 10px/1.65 Arial, Helvetica, sans-serif; }
 .startOver { margin: 9px auto 0; display: flex; }
 .privacy { width: fit-content; max-width: 100%; margin: 20px auto 0; display: flex; align-items: center; gap: 8px; color: #78878a; font-size: 9px; }
 .privacy svg { color: #719992; }
@@ -151,6 +180,7 @@
   .inputBody, .resultBody { padding-left: 16px; padding-right: 16px; }
   .panelHeading { padding-left: 16px; padding-right: 16px; }
   .recordArea, .uploadArea { min-height: 245px; }
+  .advancedControls fieldset { grid-template-columns: 1fr; }
   .emptyResult { min-height: 400px; padding-left: 20px; padding-right: 20px; }
   .privacy { align-items: flex-start; line-height: 1.45; }
   .privacy span { display: block; }

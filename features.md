@@ -1,6 +1,6 @@
 # Finquo feature scope and acceptance criteria
 
-Status: F01-F16 are implemented in code. Local unit, lint, type, runtime upload, preview, responsive Chrome, Groq transcription, and Groq structured-output checks pass. Physical Safari/mobile and F17 live-deployment verification remain pending.
+Status: F01-F16 and the optional advanced-analysis controls are implemented in code. Local unit, lint, type, runtime upload, preview, responsive Chrome, Groq transcription, and Groq structured-output checks pass. Physical Safari/mobile and F17 live-deployment verification remain pending.
 
 ## Required core
 
@@ -65,11 +65,11 @@ These are the brief's bonuses, not agreed implementation scope. Reconsider only 
 
 | Priority | Optional feature | Dependency / cost |
 | --- | --- | --- |
-| 1 | Transcript viewer with copy/text download | Validated transcript already exists; adds UI and export handling. |
-| 2 | Remove a word and re-render locally | Requires editable result state and reset behavior; no repeat AI call. |
-| 3 | Cloud color choice | Adds contrast and export consistency checks. |
-| 4 | Saved analyses | Introduces persistence, deletion, and data-lifetime decisions; defer. |
-| 5 | Cloud shape choice | Adds layout complexity and narrow-screen/export testing; defer. |
+| Implemented | Advanced summary, context, highlights, and cleaned copyable transcript | User-selectable before analysis; word cloud remains the default result. |
+| 1 | Remove a word and re-render locally | Requires editable result state and reset behavior; no repeat AI call. |
+| 2 | Cloud color choice | Adds contrast and export consistency checks. |
+| 3 | Saved analyses | Introduces persistence, deletion, and data-lifetime decisions; defer. |
+| 4 | Cloud shape choice | Adds layout complexity and narrow-screen/export testing; defer. |
 
 Drag-and-drop is optional polish after the file picker works. A static example cloud, if ever added, must be labeled as an example and must not impersonate a result.
 

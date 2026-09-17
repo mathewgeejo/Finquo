@@ -2,7 +2,7 @@ import { z } from "zod";
 import { analyseAudio } from "@/lib/server/ai";
 import { AppError, checkOrigin, errorResponse, publicError } from "@/lib/server/errors";
 import { acquire, getAudio, session } from "@/lib/server/store";
-import type { AnalysisEvent } from "@/lib/terms";
+import { analysisOptionsSchema, type AnalysisEvent, type AnalysisOptions } from "@/lib/terms";
 
 export const runtime = "nodejs";
 
@@ -25,8 +25,8 @@ export async function POST(request: Request) {
       }
       body += decoder.decode();
     } finally { await reader.cancel().catch(() => {}); }
-    let parsed: { audioId: string };
-    try { parsed = z.object({ audioId: z.string().uuid() }).parse(JSON.parse(body)); }
+    let parsed: { audioId: string; options?: AnalysisOptions };
+    try { parsed = z.object({ audioId: z.string().uuid(), options: analysisOptionsSchema.optional() }).parse(JSON.parse(body)); }
     catch { throw new AppError("INVALID_REQUEST", "Choose or record audio before analysing it."); }
     const owner = await session();
     const audio = getAudio(parsed.audioId, owner);
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
         };
         const heartbeat = setInterval(() => send({ type: "stage", message: "Still analysing your session…" }), 15_000);
         try {
-          const result = await analyseAudio(audio, signal, (message) => send({ type: "stage", message }));
+          const result = await analyseAudio(audio, parsed.options ?? { summary: false, context: false, transcript: false, highlights: false }, signal, (message) => send({ type: "stage", message }));
           send({ type: "result", result });
         } catch (error) {
           const safe = publicError(error);

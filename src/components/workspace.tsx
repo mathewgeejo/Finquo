@@ -2,12 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Activity, ArrowRight, AudioLines, Check, CheckCircle2, CircleHelp, FileAudio, Headphones, Info, LoaderCircle, LockKeyhole, Mic, Plus, RotateCcw, ShieldCheck, Sparkles, Square, Upload, X } from "lucide-react";
+import { Activity, ArrowRight, AudioLines, Check, CheckCircle2, CircleHelp, FileAudio, Headphones, Info, ListChecks, LoaderCircle, LockKeyhole, MessageSquareText, Mic, Plus, RotateCcw, ShieldCheck, SlidersHorizontal, Sparkles, Square, Upload, X } from "lucide-react";
 import { AUDIO_ACCEPT, formatBytes, formatDuration, validateFile } from "@/lib/audio/limits";
 import { checkLocalDuration, uploadAudio } from "@/lib/audio/client";
-import type { AnalysisEvent, AnalysisResult, AudioDraft } from "@/lib/terms";
+import type { AnalysisEvent, AnalysisOptions, AnalysisResult, AudioDraft } from "@/lib/terms";
 import { useRecorder } from "@/hooks/use-recorder";
 import { WordCloud } from "./results/word-cloud";
+import { AdvancedAnalysis } from "./results/advanced-analysis";
 import styles from "./workspace.module.css";
 
 type Phase = "idle" | "checking" | "uploading" | "ready" | "analysing" | "complete";
@@ -24,6 +25,8 @@ export function Workspace() {
   const [stage, setStage] = useState("");
   const [waiting, setWaiting] = useState(0);
   const [dragging, setDragging] = useState(false);
+  const [advancedEnabled, setAdvancedEnabled] = useState(false);
+  const [advancedOptions, setAdvancedOptions] = useState<AnalysisOptions>({ summary: true, context: true, transcript: true, highlights: true });
   const controller = useRef<AbortController | null>(null);
   const generation = useRef(0);
   const draftRef = useRef<AudioDraft | null>(null);
@@ -103,7 +106,8 @@ export function Workspace() {
     controller.current = abort;
     setPhase("analysing"); setError(""); setNotice(""); setResult(null); setStage("Starting your analysis…"); setWaiting(0);
     try {
-      const response = await fetch("/api/analyse", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ audioId: draft.audioId }), signal: AbortSignal.any([abort.signal, AbortSignal.timeout(200_000)]) });
+      const options = advancedEnabled ? advancedOptions : { summary: false, context: false, transcript: false, highlights: false };
+      const response = await fetch("/api/analyse", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ audioId: draft.audioId, options }), signal: AbortSignal.any([abort.signal, AbortSignal.timeout(200_000)]) });
       if (!response.ok) {
         const data = await response.json();
         if (data.code === "DRAFT_EXPIRED") { draftRef.current = null; setDraft(null); }
@@ -162,6 +166,7 @@ export function Workspace() {
               {busy && <div className={styles.progressBox}><div><LoaderCircle size={15} className={styles.spin} /><span>{phase === "uploading" && progress < 100 ? `Uploading audio · ${progress}%` : phase === "uploading" ? "Checking and preparing playback…" : stage}</span></div>{phase === "uploading" && <progress max={100} value={progress} aria-label="Audio upload progress" />}<button onClick={cancel} className={styles.textButton}>Cancel</button></div>}
               {!busy && <button className={styles.replaceButton} onClick={() => { reset(); if (mode === "upload") input.current?.click(); }}><RotateCcw size={14} />{mode === "record" ? "Record again" : "Choose another file"}</button>}
             </div>}
+            {draft && !busy && <section className={styles.advancedControls} aria-label="Advanced analysis options"><label className={styles.advancedToggle}><span><SlidersHorizontal size={15} /><span><strong>Advanced analysis</strong><small>Choose the extra detail you want.</small></span></span><input type="checkbox" checked={advancedEnabled} onChange={(event) => setAdvancedEnabled(event.target.checked)} /><i aria-hidden="true" /></label>{advancedEnabled && <fieldset><legend>Include in this analysis</legend><label><input type="checkbox" checked={advancedOptions.summary} onChange={(event) => setAdvancedOptions((current) => ({ ...current, summary: event.target.checked }))} /><span><Sparkles size={14} />Brief summary</span></label><label><input type="checkbox" checked={advancedOptions.context} onChange={(event) => setAdvancedOptions((current) => ({ ...current, context: event.target.checked }))} /><span><MessageSquareText size={14} />Conversation context</span></label><label><input type="checkbox" checked={advancedOptions.transcript} onChange={(event) => setAdvancedOptions((current) => ({ ...current, transcript: event.target.checked }))} /><span><FileAudio size={14} />Cleaned transcript</span></label><label><input type="checkbox" checked={advancedOptions.highlights} onChange={(event) => setAdvancedOptions((current) => ({ ...current, highlights: event.target.checked }))} /><span><ListChecks size={14} />Discussion highlights</span></label></fieldset>}</section>}
             {error && <div className={styles.error} role="alert"><Info size={17} /><span>{error}</span></div>}
             {notice && <p className={styles.notice} role="status">{notice}</p>}
             <div className={styles.limits}><FileAudio size={14} /><span>MP3, WAV, M4A, AAC, OGG, WEBM, FLAC<br /><strong>25 MB max · 10 minutes max</strong></span></div>
@@ -170,7 +175,7 @@ export function Workspace() {
           </div>
         </section>
         <section className={styles.resultPanel} aria-labelledby="result-title"><div className={styles.panelHeading}><div className={styles.headingIcon}><Sparkles size={18} /></div><div><h2 id="result-title" ref={resultHeading} tabIndex={-1}>The big picture</h2><p>{result ? "The topics that shaped your conversation." : "Your conversation, at a glance."}</p></div><span className={result ? styles.readyBadge : styles.awaitingBadge}>{result ? <><Check size={12} />Ready</> : "WORD CLOUD"}</span></div>
-          {result ? <div className={styles.resultBody}><div className={styles.resultMeta}><span><CheckCircle2 size={14} />Session analysed</span><span>{formatDuration(result.durationSeconds)} of audio</span></div><WordCloud terms={result.terms} /><button className={styles.startOver} onClick={reset}><Plus size={15} />Analyse another session</button></div> : <div className={styles.emptyResult}>
+          {result ? <div className={styles.resultBody}><div className={styles.resultMeta}><span><CheckCircle2 size={14} />Session analysed</span><span>{formatDuration(result.durationSeconds)} of audio</span></div><WordCloud terms={result.terms} /><AdvancedAnalysis analysis={result.advanced} /><button className={styles.startOver} onClick={reset}><Plus size={15} />Analyse another session</button></div> : <div className={styles.emptyResult}>
             <div className={`${styles.emptyIllustration} ${phase === "analysing" ? styles.analysingIllustration : ""}`} aria-hidden="true"><div className={styles.orbitOne} /><div className={styles.orbitTwo} /><span className={styles.orbitDot} /><span className={styles.orbitSpark}><Sparkles size={16} /></span><div className={styles.illustrationCenter}>{phase === "analysing" ? <AudioLines size={37} /> : <Activity size={37} strokeWidth={1.4} />}</div><span className={styles.smallWave}><AudioLines size={16} /></span></div>
             <span className={styles.emptyEyebrow}>{phase === "analysing" ? "A LITTLE CLARITY IS ON ITS WAY" : "MAKE ROOM FOR THE MEANING"}</span><h3>{phase === "analysing" ? "Finding the words that matter" : "Every conversation has a focus."}</h3><p>{phase === "analysing" ? stage : "Add your audio and we’ll bring its main topics into view. The more a topic matters, the bigger it appears."}</p>{phase === "analysing" ? <span className={styles.processingPill}><LoaderCircle size={14} className={styles.spin} />Analysing · {formatDuration(waiting)}</span> : <div className={styles.emptyTags}><span><AudioLines size={13} />AI-powered insights</span><span><CheckCircle2 size={13} />Yours to download</span></div>}
           </div>}
