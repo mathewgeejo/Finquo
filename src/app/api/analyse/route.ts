@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     const owner = await session();
     const audio = getAudio(parsed.audioId, owner);
     if (audio.busy) throw new AppError("ALREADY_ANALYSING", "This audio is already being analysed.", 409, true);
-    if (!process.env.GEMINI_API_KEY) throw new AppError("AI_NOT_CONFIGURED", "AI analysis isn't configured yet. The site owner needs to add a Gemini API key.", 503);
+    if (!process.env.GROQ_API_KEY) throw new AppError("AI_NOT_CONFIGURED", "AI analysis isn't configured yet. The site owner needs to add a Groq API key.", 503);
     release = acquire(owner);
     audio.busy = true;
     const abort = new AbortController();

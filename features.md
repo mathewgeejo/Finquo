@@ -1,6 +1,6 @@
 # Finquo feature scope and acceptance criteria
 
-Status: F01-F16 are implemented in code. Local unit, lint, type, runtime upload, preview, and responsive Chrome checks pass. Real Gemini, physical Safari/mobile, and F17 live-deployment verification remain pending.
+Status: F01-F16 are implemented in code. Local unit, lint, type, runtime upload, preview, responsive Chrome, Groq transcription, and Groq structured-output checks pass. Physical Safari/mobile and F17 live-deployment verification remain pending.
 
 ## Required core
 

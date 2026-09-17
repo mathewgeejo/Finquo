@@ -177,7 +177,7 @@ export function Workspace() {
           <div className={styles.resultFootnote}><CircleHelp size={15} /><span>Word size reflects prominence. Filler words stay out of the picture.</span></div>
         </section>
       </div>
-      <div className={styles.privacy}><LockKeyhole size={15} /><p>Just this session. No account needed.<span> Audio is uploaded for temporary playback and sent to Gemini only when you analyse. No saved history.</span></p></div>
+      <div className={styles.privacy}><LockKeyhole size={15} /><p>Just this session. No account needed.<span> Audio is uploaded for temporary playback and sent to Groq only when you analyse. No saved history.</span></p></div>
       <div className={styles.liveStatus} role="status" aria-live="polite">{stage}</div>
     </main>
     <footer className={styles.footer}><span>Made for conversations that move us forward.</span><span>Listen. Reflect. <strong>Find the focus.</strong></span></footer>

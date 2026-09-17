@@ -1,13 +1,13 @@
 # Finquo
 
-Finquo is a focused, responsive tool for mentors. Record audio in the browser or upload an existing session, review it, and use Gemini to turn the prominent topics into a downloadable word cloud.
+Finquo is a focused, responsive tool for mentors. Record audio in the browser or upload an existing session, review it, and use Groq to turn the prominent topics into a downloadable word cloud.
 
 ## What works
 
 - Live recording with permission guidance, timer, stop state, playback, and re-recording
 - MP3, WAV, M4A, AAC, OGG, WEBM, and FLAC uploads with file, size, duration, and real transfer progress
 - Server-side format and duration verification for files up to 25 MB or 10 minutes
-- Genuine Gemini transcription and grounded prominent-term extraction
+- Genuine Groq transcription and grounded prominent-term extraction
 - Responsive SVG word cloud, accessible ranked topic list, and matching PNG download
 - Clear recovery for invalid files, missing speech, expired drafts, cancellation, timeouts, and provider failures
 
@@ -15,7 +15,7 @@ Sessions are temporary and are lost when the server restarts. There are no accou
 
 ## Run locally
 
-Prerequisites: Node.js 22.14 or newer and a Gemini API key.
+Prerequisites: Node.js 22.14 or newer and a Groq API key.
 
 ```bash
 git clone <your-repository-url>
@@ -27,8 +27,9 @@ cp .env.example .env.local
 On Windows PowerShell, use `Copy-Item .env.example .env.local` instead of `cp`. Add your key to `.env.local`:
 
 ```dotenv
-GEMINI_API_KEY=your_key_here
-GEMINI_MODEL=gemini-2.5-flash
+GROQ_API_KEY=your_key_here
+GROQ_TRANSCRIPTION_MODEL=whisper-large-v3-turbo
+GROQ_CHAT_MODEL=openai/gpt-oss-20b
 ```
 
 Then start the app:
@@ -39,15 +40,11 @@ npm run dev
 
 Open `http://localhost:3000`. Microphone recording requires localhost or HTTPS. Run `npm run test`, `npm run typecheck`, and `npm run lint` for the focused checks.
 
-### If Gemini analysis says the project has no quota
-
-The API key may be valid while its Google AI Studio project has no available request quota for the selected model. Open the project's [AI Studio rate-limit page](https://aistudio.google.com/usage), select a project/key with available Gemini quota, or enable billing for the project. Gemini quotas apply to the project, rather than to an individual key. After changing `.env.local`, restart a production server; Next.js development mode normally reloads it automatically.
-
 ## AI service
 
-The app uses the Gemini API because one multimodal request can produce both a transcript and structured topic candidates. The server validates those candidates against the transcript, so unsupported or invented topics never reach the cloud. The API key stays server-side.
+The app uses Groq in two server-side steps: `whisper-large-v3-turbo` transcribes the audio, then `openai/gpt-oss-20b` returns structured prominent-term candidates. The app validates candidates against the transcript, so unsupported or invented topics never reach the cloud. The API key stays server-side.
 
-Audio is converted to mono 16 kHz WAV before Gemini receives it. The uploaded Gemini file is deleted after each analysis request where the provider permits it. Provider retention and privacy remain subject to the Gemini API terms attached to the configured account.
+Audio is converted to mono 16 kHz WAV before Groq receives it. Audio and transcripts are processed only for the active analysis request; provider retention and privacy remain subject to the Groq account terms.
 
 ## Decisions and tradeoffs
 
@@ -59,7 +56,7 @@ Audio is converted to mono 16 kHz WAV before Gemini receives it. The uploaded Ge
 
 ## Third-party software
 
-Next.js, React, Google GenAI SDK, d3-cloud, Zod, Lucide React, FFmpeg/ffprobe static packages, Vitest, Playwright, TypeScript, and ESLint. No template or copied UI component was used.
+Next.js, React, d3-cloud, Zod, Lucide React, FFmpeg/ffprobe static packages, Vitest, Playwright, TypeScript, and ESLint. No template or copied UI component was used.
 
 ## AI coding tools
 
@@ -67,6 +64,6 @@ OpenAI Codex was used to interpret the supplied brief, prepare the planning docu
 
 ## With another week
 
-I would test real microphones and every accepted codec on physical iOS and Android devices, add an explicit privacy/retention note tailored to the chosen Gemini account, and then consider transcript download and locally removing a term from the cloud. Persistent history would wait until there is a clear privacy and deletion policy.
+I would test real microphones and every accepted codec on physical iOS and Android devices, add an explicit privacy/retention note tailored to the chosen Groq account, and then consider transcript download and locally removing a term from the cloud. Persistent history would wait until there is a clear privacy and deletion policy.
 
 Brief ref: TFG-WD-4417

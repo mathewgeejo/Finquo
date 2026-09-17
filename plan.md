@@ -1,6 +1,6 @@
 # Finquo implementation plan
 
-Status: core implementation complete locally. Deployment, a real Gemini request, and physical Safari/mobile checks remain pending.
+Status: core implementation complete locally. Groq transcription and structured topic extraction have passed direct API smoke tests; deployment and physical Safari/mobile checks remain pending.
 
 ## 1. Objective and authority
 
@@ -19,7 +19,7 @@ Companion documents: [design specification](desing.md) and [feature acceptance c
 | Application | Next.js App Router + React + TypeScript | One repository for the interactive tool and server-side AI boundary. Next.js already includes React. |
 | Styling | CSS Modules and a small global token stylesheet | Precise responsive styling without a component framework or design-system project. |
 | Browser audio | MediaRecorder, getUserMedia, native audio player | Built-in recording and playback; negotiate available recording formats at runtime. |
-| AI | Gemini through the server-side Google GenAI SDK | Audio understanding and structured output can cover transcription and term extraction with one provider. |
+| AI | Groq speech-to-text and structured chat completions | `whisper-large-v3-turbo` transcribes audio; `openai/gpt-oss-20b` returns validated topic candidates. |
 | Validation | Zod; server-side media inspection using ffprobe | Validate AI responses and actual media instead of trusting client metadata. |
 | Compatibility | Server-side FFmpeg conversion when required | Convert allowed files that the provider or browser cannot directly decode. |
 | Word layout | d3-cloud, rendered as SVG | Control typography and derive a matching PNG from the same layout. |
@@ -27,7 +27,7 @@ Companion documents: [design specification](desing.md) and [feature acceptance c
 | Verification | Focused unit tests and Playwright, plus real browser checks | Cover limits, state transitions, API failures, and complete user flows. |
 | Storage | Session memory and temporary server files | No accounts or persistent history in the core scope. |
 
-Select maintained compatible package versions and pin a lockfile when implementation starts. Choose the exact available Gemini model through an audio/schema smoke test; store its identifier in a server environment variable. No provider keys or paid subscriptions are needed for planning.
+Select maintained compatible package versions and pin a lockfile when implementation starts. Configure the Groq transcription and structured-output models through server environment variables and verify them with an audio/schema smoke test. No provider keys or paid subscriptions are needed for planning.
 
 ### Hosting decision
 
@@ -45,7 +45,7 @@ flowchart LR
   D --> E[Upload with actual progress]
   E --> F[Server: inspect duration and format]
   F --> G[Normalize media if needed]
-  G --> H[Gemini: transcript and prominent terms]
+  G --> H[Groq: transcript and prominent terms]
   H --> I[Validate, normalize, and rank terms]
   I --> J[SVG word cloud]
   J --> K[Download PNG]
@@ -85,7 +85,7 @@ Result shape: `{ transcript, terms: [{ text, weight, count }], durationSeconds }
 - Remove stopwords and conversational filler; normalize case, conservative plurals, and obvious variants. Avoid aggressive stemming that merges distinct concepts. Verify returned terms against transcript evidence and discard unsupported terms.
 - Rank using normalized occurrence counts with bounded AI salience adjustment; document the exact formula when implemented. Start with up to 40 terms, limited to 1-3 words each. No requirement to invent enough terms to fill the cloud.
 - Empty speech and no meaningful terms are valid empty outcomes. Avoid turning background noise into invented topics. Silence heuristics can flag candidates, but low volume alone must not reject speech.
-- Use Gemini file upload for larger media rather than assuming inline payload support. Verify all seven formats against the chosen endpoint; transcode unsupported containers on the server. Delete uploaded provider files in cleanup where supported and do not claim provider-side retention is zero.
+- Send normalized WAV to Groq's speech-to-text endpoint, then pass only the transcript to Groq's structured chat endpoint. Verify all seven formats through server normalization and do not claim provider-side retention is zero.
 - Put bounds on upload, media inspection, conversion, AI response size, and overall analysis time. Initial analysis timeout proposal: 180 seconds, to be checked using a 10-minute sample. Use explicit user retry instead of unbounded automatic paid API retries.
 
 ## 5. Build sequence and current state
@@ -93,7 +93,7 @@ Result shape: `{ transcript, terms: [{ text, weight, count }], durationSeconds }
 | Phase | Work | Completion gate |
 | --- | --- | --- |
 | 0. Planning | These three documents | Complete. |
-| 1. Technical proof | Scaffold, server config, media inspection, one real AI request, deployment feasibility | Partially complete: local media/API smoke test passes; real Gemini and host-limit checks need credentials/deployment. |
+| 1. Technical proof | Scaffold, server config, media inspection, one real AI request, deployment feasibility | Partially complete: local media, Groq transcription, and structured-output smoke tests pass; host-limit checks need deployment. |
 | 2. Audio flow | One-page shell, recorder, upload, shared draft and preview | Implemented; upload path verified in desktop and 390 px Chrome. Real microphone/Safari checks remain. |
 | 3. AI pipeline | Secure upload, stage events, provider adapter, term normalization | Implemented and type checked; real provider result remains unverified without a key. |
 | 4. Results | Responsive cloud, accessible term list, PNG export | Implemented; visual layout verified. Full export verification awaits a real AI result. |
@@ -141,6 +141,6 @@ Checked during planning; confirm current service constraints during implementati
 - [Next.js self-hosting](https://nextjs.org/docs/app/guides/self-hosting)
 - [Vercel Functions limits](https://vercel.com/docs/functions/limitations)
 - [Render free-service behavior](https://render.com/docs/free)
-- [Gemini audio understanding](https://ai.google.dev/gemini-api/docs/audio)
-- [Gemini structured outputs](https://ai.google.dev/gemini-api/docs/structured-output)
+- [Groq speech-to-text](https://console.groq.com/docs/speech-to-text)
+- [Groq structured outputs](https://console.groq.com/docs/structured-outputs)
 - [d3-cloud source and documentation](https://github.com/jasondavies/d3-cloud)
